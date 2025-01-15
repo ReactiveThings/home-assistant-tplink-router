@@ -15,6 +15,7 @@ from homeassistant.const import (
     CONF_SCAN_INTERVAL,
     CONF_VERIFY_SSL,
 )
+from importlib.metadata import version
 
 STEP_USER_DATA_SCHEMA = vol.Schema(
     {
@@ -45,6 +46,7 @@ class ConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
                 await self.hass.async_add_executor_job(router.authorize)
                 return self.async_create_entry(title=user_input["host"], data=user_input)
             except Exception as error:
+                
                 _LOGGER.error('TplinkRouter Integration Exception - {}'.format(error))
                 errors['base'] = str(error)
 
@@ -75,8 +77,8 @@ class OptionsFlow(config_entries.OptionsFlowWithConfigEntry):
                 self.hass.config_entries.async_update_entry(self.config_entry, data=user_input)
                 return self.async_create_entry(title=user_input["host"], data=user_input)
             except Exception as error:
-                _LOGGER.error('TplinkRouter Integration Exception - {}'.format(error))
-                errors['base'] = str(error)
+                _LOGGER.error('TplinkRouter version {} Integration Exception - {}'.format(version('tplinkrouterc6u'), error))
+                errors['base'] = str(error) + str(version('tplinkrouterc6u'))
 
         data_schema = vol.Schema({
             vol.Required(CONF_HOST, default=data.get(CONF_HOST)): cv.string,
